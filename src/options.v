@@ -24,6 +24,9 @@ pub mut:
 	min_idle_connections int
 	// max_idle_connections defaults to 0, idle connections will not be closed.
 	max_idle_connections int
+	// max_retries is the maximum number of retries before giving up.
+	// Defaults to 3, 0 is set to 3. -1 disables retries.
+	max_retries int
 }
 
 fn (mut opts Options) init() {
@@ -32,6 +35,9 @@ fn (mut opts Options) init() {
 	}
 	if opts.pool_size == 0 {
 		opts.pool_size = 10 * runtime.nr_cpus()
+	}
+	if opts.max_retries == 0 {
+		opts.max_retries = 3
 	}
 	opts.dialer = new_dialer(opts)
 }

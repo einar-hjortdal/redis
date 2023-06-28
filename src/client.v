@@ -1,6 +1,8 @@
 module redis
 
 import pool
+import net
+import pool.proto
 
 /*
 *
@@ -22,6 +24,26 @@ fn (mut c BaseClient) new_connection() !pool.Connection {
 
 	c.init_connection(mut cn) or {
 		c.connection_pool.close_connection(mut cn)!
+		return err
+	}
+
+	return cn
+}
+
+fn (mut c BaseClient) get_connection() !pool.Connection {
+	cn := c.retrieve_connection()!
+	return cn
+}
+
+fn (mut c BaseClient) retrieve_connection() !pool.Connection {
+	mut cn := c.connection_pool.get()!
+
+	if cn.initialized {
+		return cn
+	}
+
+	c.init_connection(mut cn) or {
+		c.connection_pool.remove(mut cn, err.msg())
 		return err
 	}
 
@@ -52,6 +74,58 @@ fn (c BaseClient) init_connection(mut cn pool.Connection) ! {
 	}
 }
 
+fn (mut c BaseClient) release_connection(mut cn pool.Connection) ! {
+	c.connection_pool.put(mut cn)!
+}
+
+fn (mut c BaseClient) with_connection(func fn (mut pool.Connection) !) ! {
+	mut cn := c.get_connection()!
+
+	func(mut cn) or {
+		c.release_connection(mut cn)!
+		return err
+	}
+	c.release_connection(mut cn)!
+}
+
+fn (mut c BaseClient) dial(address string) !&net.TcpConn {
+	return c.options.dialer(address)
+}
+
+// TODO fix this
+fn (mut c BaseClient) process(cmd Cmder) ! {
+	mut last_error := ''
+	for attempt := 0; attempt <= c.options.max_retries; attempt++ {
+		if retry := c.attempt_process(cmd, attempt) {
+			if !retry {
+				return error(last_error)
+			}
+		} else {
+			last_error = err.msg()
+		}
+	}
+}
+
+fn (mut c BaseClient) attempt_process(cmd Cmder, attempt int) !bool {
+	c.with_connection(fn [cmd] (mut cn pool.Connection) ! {
+		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
+			return write_cmd(mut wr, cmd)
+		})!
+		cn.with_reader(cmd.read_reply)!
+	}) or {
+		retry := should_retry(err)
+		return retry
+	}
+
+	return false
+}
+
+// close closes the client, releasing any open resources.
+// It is rare to close a Client, as the Client is meant to be long-lived and shared between many coroutines.
+fn (mut c BaseClient) close() ! {
+	c.connection_pool.close()!
+}
+
 /*
 *
 *
@@ -62,6 +136,7 @@ fn (c BaseClient) init_connection(mut cn pool.Connection) ! {
 
 // Client representing a pool of zero or more underlying connections. A client creates and frees connections
 // automatically.
+[heap]
 pub struct Client {
 	BaseClient
 	Cmdable
@@ -77,7 +152,12 @@ pub fn new_client(mut options Options) Client {
 			connection_pool: new_connection_pool(options)
 		}
 	}
+	c.cmdable_function = c.process
 	return c
+}
+
+fn (mut c Client) process(cmd Cmder) ! {
+	c.BaseClient.process(cmd)!
 }
 
 /*

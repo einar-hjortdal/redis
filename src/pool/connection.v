@@ -9,11 +9,11 @@ pub struct Connection {
 pub:
 	id         string
 	created_at time.Time
-	reader     proto.Reader
-	writer     proto.Writer
 mut:
 	connection net.TcpConn
 	pooled     bool
+	reader     proto.Reader
+	writer     proto.Writer
 pub mut:
 	initialized bool
 }
@@ -31,4 +31,12 @@ fn new_connection(connection net.TcpConn) Connection {
 
 fn (mut connection Connection) close() ! {
 	connection.connection.close()!
+}
+
+pub fn (mut connection Connection) with_reader(func fn (mut rd proto.Reader) !) ! {
+	return func(mut connection.reader)
+}
+
+pub fn (mut connection Connection) with_writer(func fn (mut wr proto.Writer) !) ! {
+	return func(mut connection.writer)
 }

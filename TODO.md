@@ -25,6 +25,8 @@ In no particular order.
 - Implement [cluster](https://docs.keydb.dev/docs/cluster-spec/) client
 - Implement [pipeline](https://docs.keydb.dev/docs/pipelining/)
 - Implement [pub/sub](https://docs.keydb.dev/docs/pubsub/)
+- Implement retry_backoff
+- Handle errors properly
 - Implement hooks: provide a way to modify or customize the behavior of specific stages in the command 
   execution process. Allow users to inject additional logic before or after a command is executed (such 
   as logging).
