@@ -7,19 +7,61 @@ import strconv
 import x.json2 as json
 
 pub struct Reader {
+	// mfails is the maximum number of fails after which it is assumed that the stream has ended.
+	mfails int
 mut:
-	reader io.BufferedReader
+	reader io.Reader
+	// buf is the buffer read with `Reader.read`.
+	buf []u8
+	// line is the line constructed by scanning buf with private_read_line.
+	line []u8
+	// Current offset in `buf`.
+	offset int
+	// fails is the number of times private_read_line read 0 bytes in a row.
+	fails int
 }
 
 pub fn new_reader(io_reader io.Reader) Reader {
 	return Reader{
-		reader: io.new_buffered_reader(io.BufferedReaderConfig{ reader: io_reader })
+		reader: io_reader
+		buf: []u8{len: 4096, cap: 4096}
+		mfails: 2
 	}
 }
 
-// reset discards any buffered data
-pub fn (mut rd Reader) reset() {
-	rd.reader.free()
+fn (mut rd Reader) private_read_line() !string {
+	// fill the buffer
+	bytes_read := rd.reader.read(mut rd.buf)!
+	if bytes_read == 0 {
+		if rd.fails < rd.mfails {
+			rd.fails += 1
+			return rd.private_read_line()
+		} else {
+			res := rd.line.bytestr()
+			rd.reset()
+			return res
+		}
+	}
+
+		for i := rd.offset; i < rd.buf.len; i += 1 {
+			rd.offset += 1
+			rd.line << rd.buf[i]
+			if rd.buf[i] == `\n` {
+				res :=rd.line.bytestr()
+				rd.line = []u8{}
+				return res
+			}
+		}
+		rd.offset = 0
+		return rd.private_read_line()
+
+}
+
+fn (mut rd Reader) reset() {
+	rd.buf = []u8{len: 4096, cap: 4096}
+	rd.line = []u8{}
+	rd.offset = 0
+	rd.fails = 0
 }
 
 pub fn (mut rd Reader) read_line() !string {
@@ -45,8 +87,8 @@ pub fn (mut rd Reader) read_line() !string {
 fn (mut rd Reader) read() !string {
 	// BufferedReader `read_line` stops at `\n`
 	// https://modules.vlang.io/io.html#BufferedReader.read_line
-	b := rd.reader.read_line()!
-	if b == resp_crlf || !b.ends_with(resp_crlf) { // b does not end with resp_crlf. Why?
+	b := rd.private_read_line()!
+	if b == resp_crlf || !b.ends_with(resp_crlf) {
 		return error('Invalid reply: ${b}')
 	}
 	return b.trim_string_right(resp_crlf)
