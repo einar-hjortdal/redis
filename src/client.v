@@ -107,7 +107,7 @@ fn (mut c BaseClient) attempt_process(cmd Cmder, attempt int) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
-		cn.with_reader(cmd.read_reply)!
+		cn.with_reader(cmd.read_reply)! // error hangs instead of propagate why TODO
 	})!
 }
 
