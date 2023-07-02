@@ -23,7 +23,7 @@ pub fn (mut rd Reader) reset() {
 }
 
 pub fn (mut rd Reader) read_line() !string {
-	line := rd.read()! // TODO hangs here
+	line := rd.read()!
 
 	if line.starts_with(resp_error) {
 		return error(line.trim_string_right(resp_error))
@@ -46,7 +46,7 @@ fn (mut rd Reader) read() !string {
 	// BufferedReader `read_line` stops at `\n`
 	// https://modules.vlang.io/io.html#BufferedReader.read_line
 	b := rd.reader.read_line()!
-	if b == resp_crlf || !b.ends_with(resp_crlf) {
+	if b == resp_crlf || !b.ends_with(resp_crlf) { // b does not end with resp_crlf. Why?
 		return error('Invalid reply: ${b}')
 	}
 	return b.trim_string_right(resp_crlf)
