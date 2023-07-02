@@ -34,9 +34,9 @@ fn (mut connection Connection) close() ! {
 }
 
 pub fn (mut connection Connection) with_reader(func fn (mut rd proto.Reader) !) ! {
-	return func(mut connection.reader)
+	func(mut connection.reader)!
 }
 
 pub fn (mut connection Connection) with_writer(func fn (mut wr proto.Writer) !) ! {
-	return func(mut connection.writer)
+	func(mut connection.writer)!
 }

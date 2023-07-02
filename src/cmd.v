@@ -29,12 +29,12 @@ mut:
 
 fn write_cmds(mut wr proto.Writer, cmds []Cmder) ! {
 	for cmd in cmds {
-		write_cmd(mut wr, cmd) or { return err }
+		write_cmd(mut wr, cmd)!
 	}
 }
 
 fn write_cmd(mut wr proto.Writer, cmd Cmder) ! {
-	return wr.write_args(cmd.args())
+	wr.write_args(cmd.args())!
 }
 
 fn cmd_string(cmd Cmder, val json.Any) string {

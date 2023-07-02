@@ -7,6 +7,7 @@ In no particular order.
 - Document creation of a client and issuing commands in README.md
 - Add tests
 - Add context
+- Do not use `json.Any`
 
 ## Options
 
@@ -45,9 +46,7 @@ In no particular order.
 ### Reader
 
 - `Reader`'s `reader.read_line()` behavior is unknown. Does it need cache to prevent buffer-full errors?
-- `big number` can be parsed to `big.Integer`, but `big.Integer` is not part of the return type of `read_reply`.
-  Decide whether to create a custom type or return `string` instead of `big.Integer` for `big number` 
-  types.
+- `big number` can be parsed to `big.Integer`
 
 ### Writer
 

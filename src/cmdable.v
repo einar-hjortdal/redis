@@ -18,7 +18,7 @@ mut:
 
 fn (c Cmdable) ping() !StatusCmd {
 	cmd := new_status_cmd('ping')
-	c.cmdable_function(Cmder(cmd))! // https://github.com/vlang/v/issues/18701
+	c.cmdable_function(cmd)!
 	return cmd
 }
 
@@ -38,19 +38,19 @@ mut:
 
 pub fn (c CmdableStateful) auth(password string) StatusCmd {
 	cmd := new_status_cmd('auth', password)
-	c.cmdable_stateful_function(Cmder(cmd))
+	c.cmdable_stateful_function(cmd)
 	return cmd
 }
 
 pub fn (c CmdableStateful) auth_acl(username string, password string) StatusCmd {
 	cmd := new_status_cmd('auth', username, password)
-	c.cmdable_stateful_function(Cmder(cmd))
+	c.cmdable_stateful_function(cmd)
 	return cmd
 }
 
 // It is called `select_db` because `select` is a reserved keyword.
 pub fn (c CmdableStateful) select_db(index int) StatusCmd {
 	cmd := new_status_cmd('select', index)
-	c.cmdable_stateful_function(Cmder(cmd))
+	c.cmdable_stateful_function(cmd)
 	return cmd
 }

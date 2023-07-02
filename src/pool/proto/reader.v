@@ -23,7 +23,7 @@ pub fn (mut rd Reader) reset() {
 }
 
 pub fn (mut rd Reader) read_line() !string {
-	line := rd.read()!
+	line := rd.read()! // TODO hangs here
 
 	if line.starts_with(resp_error) {
 		return error(line.trim_string_right(resp_error))
@@ -224,11 +224,14 @@ fn (mut rd Reader) read_map(line string) !map[string]json.Any {
 	}
 }
 
-//
-//
-//
-//
-//
+/*
+*
+*
+* TODO
+*
+*
+*/
+
 pub fn (mut rd Reader) read_string() !string {
 	line := rd.read_line()!
 

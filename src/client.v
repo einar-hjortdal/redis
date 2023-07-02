@@ -92,32 +92,23 @@ fn (mut c BaseClient) dial(address string) !&net.TcpConn {
 	return c.options.dialer(address)
 }
 
-// TODO fix this
 fn (mut c BaseClient) process(cmd Cmder) ! {
-	mut last_error := ''
 	for attempt := 0; attempt <= c.options.max_retries; attempt++ {
-		if retry := c.attempt_process(cmd, attempt) {
-			if !retry {
-				return error(last_error)
+		c.attempt_process(cmd, attempt) or {
+			if attempt == c.options.max_retries {
+				return err
 			}
-		} else {
-			last_error = err.msg()
 		}
 	}
 }
 
-fn (mut c BaseClient) attempt_process(cmd Cmder, attempt int) !bool {
+fn (mut c BaseClient) attempt_process(cmd Cmder, attempt int) ! {
 	c.with_connection(fn [cmd] (mut cn pool.Connection) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
-			return write_cmd(mut wr, cmd)
+			write_cmd(mut wr, cmd)!
 		})!
 		cn.with_reader(cmd.read_reply)!
-	}) or {
-		retry := should_retry(err)
-		return retry
-	}
-
-	return false
+	})!
 }
 
 // close closes the client, releasing any open resources.
