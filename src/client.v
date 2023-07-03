@@ -108,8 +108,8 @@ fn (mut c BaseClient) attempt_process(mut cmd Cmder, attempt int) ! {
 		})!
 		cn.with_reader(cmd.read_reply)!
 		println(cmd) // TODO remove println
-		// cmd is unchanged, despite cmd.read_reply correctly setting cmd.val
-		// everything hangs because connection_pool.free_turn has an empty pool by default.
+		// TODO cmd is unchanged, despite cmd.read_reply correctly setting cmd.val in its own scope.
+		// TODO everything hangs because connection_pool.free_turn has an empty pool by default.
 	})!
 }
 
