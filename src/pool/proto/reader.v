@@ -30,7 +30,7 @@ pub fn new_reader(io_reader io.Reader) Reader {
 }
 
 fn (mut rd Reader) private_read_line() !string {
-	// fill the buffer
+	// Fill buffer
 	bytes_read := rd.reader.read(mut rd.buf)!
 	if bytes_read == 0 {
 		if rd.fails < rd.mfails {
@@ -38,30 +38,28 @@ fn (mut rd Reader) private_read_line() !string {
 			return rd.private_read_line()
 		} else {
 			res := rd.line.bytestr()
-			rd.reset()
+			// Reset Reader
+			rd.buf = []u8{len: 4096, cap: 4096}
+			rd.line = []u8{}
+			rd.offset = 0
+			rd.fails = 0
 			return res
 		}
 	}
 
-	// build string from buffer
-		for i := rd.offset; i < rd.buf.len; i += 1 {
+	// Build string from buffer
+	for i := rd.offset; i < rd.buf.len; i += 1 {
+		rd.line << rd.buf[i]
+		if rd.buf[i] == `\n` {
+			res := rd.line.bytestr()
+			rd.line = []u8{}
 			rd.offset += 1
-			rd.line << rd.buf[i]
-			if rd.buf[i] == `\n` {
-				res :=rd.line.bytestr()
-				rd.line = []u8{}
-				return res
-			}
+			return res
 		}
-		rd.offset = 0
-		return rd.private_read_line()
-}
-
-fn (mut rd Reader) reset() {
-	rd.buf = []u8{len: 4096, cap: 4096}
-	rd.line = []u8{}
+		rd.offset += 1
+	}
 	rd.offset = 0
-	rd.fails = 0
+	return rd.private_read_line()
 }
 
 pub fn (mut rd Reader) read_line() !string {
