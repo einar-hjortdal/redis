@@ -161,6 +161,7 @@ fn (mut pool ConnectionPool) wait_turn() ! {
 }
 
 fn (mut pool ConnectionPool) free_turn() {
+	// TODO this hangs because empty queue by default
 	_ := <-pool.queue
 }
 

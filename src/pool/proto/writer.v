@@ -60,7 +60,7 @@ fn (mut wr Writer) write_arg(v json.Any) ! {
 }
 
 fn (mut wr Writer) write_len(n int) ! {
-	wr.buf_len = []u8{}
+	wr.buf_len = []u8{} // TODO reset consistently with reader
 	wr.buf_len << strconv.format_int(n, 10).bytes()
 	wr.buf_len << resp_crlf.bytes()
 	wr.writer.write(wr.buf_len)!

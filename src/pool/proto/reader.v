@@ -43,6 +43,7 @@ fn (mut rd Reader) private_read_line() !string {
 		}
 	}
 
+	// build string from buffer
 		for i := rd.offset; i < rd.buf.len; i += 1 {
 			rd.offset += 1
 			rd.line << rd.buf[i]
@@ -54,7 +55,6 @@ fn (mut rd Reader) private_read_line() !string {
 		}
 		rd.offset = 0
 		return rd.private_read_line()
-
 }
 
 fn (mut rd Reader) reset() {

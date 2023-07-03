@@ -7,5 +7,5 @@ fn test_ping() {
 		println(err)
 		return
 	}
-	val := res.val()
+	assert res.val() == 'PONG'
 }

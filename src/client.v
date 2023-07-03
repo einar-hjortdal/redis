@@ -80,7 +80,6 @@ fn (mut c BaseClient) release_connection(mut cn pool.Connection) ! {
 
 fn (mut c BaseClient) with_connection(func fn (mut pool.Connection) !) ! {
 	mut cn := c.get_connection()!
-
 	func(mut cn) or {
 		c.release_connection(mut cn)!
 		return err
@@ -92,9 +91,9 @@ fn (mut c BaseClient) dial(address string) !&net.TcpConn {
 	return c.options.dialer(address)
 }
 
-fn (mut c BaseClient) process(cmd Cmder) ! {
+fn (mut c BaseClient) process(mut cmd Cmder) ! {
 	for attempt := 0; attempt <= c.options.max_retries; attempt++ {
-		c.attempt_process(cmd, attempt) or {
+		c.attempt_process(mut cmd, attempt) or {
 			if attempt == c.options.max_retries {
 				return err
 			}
@@ -102,12 +101,15 @@ fn (mut c BaseClient) process(cmd Cmder) ! {
 	}
 }
 
-fn (mut c BaseClient) attempt_process(cmd Cmder, attempt int) ! {
-	c.with_connection(fn [cmd] (mut cn pool.Connection) ! {
+fn (mut c BaseClient) attempt_process(mut cmd Cmder, attempt int) ! {
+	c.with_connection(fn [mut cmd] (mut cn pool.Connection) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
-		cn.with_reader(cmd.read_reply)! // error hangs instead of propagate why TODO
+		cn.with_reader(cmd.read_reply)!
+		println(cmd) // TODO remove println
+		// cmd is unchanged, despite cmd.read_reply correctly setting cmd.val
+		// everything hangs because connection_pool.free_turn has an empty pool by default.
 	})!
 }
 
@@ -147,8 +149,8 @@ pub fn new_client(mut options Options) Client {
 	return c
 }
 
-fn (mut c Client) process(cmd Cmder) ! {
-	c.BaseClient.process(cmd)!
+fn (mut c Client) process(mut cmd Cmder) ! {
+	c.BaseClient.process(mut cmd)!
 }
 
 /*
