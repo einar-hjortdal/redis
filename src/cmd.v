@@ -162,8 +162,8 @@ mut:
 	val string
 }
 
-fn new_status_cmd(args ...json.Any) StatusCmd {
-	return StatusCmd{
+fn new_status_cmd(args ...json.Any) &StatusCmd {
+	return &StatusCmd{
 		BaseCmd: BaseCmd{
 			args: args
 		}
@@ -190,7 +190,8 @@ fn (cmd StatusCmd) cmd_string() string {
 	return cmd_string(cmd, cmd.val)
 }
 
-fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
-	cmd.val = rd.read_string()!
-	println(cmd.val) // outputs PONG correctly
+fn (cmd &StatusCmd) read_reply(mut rd proto.Reader) ! {
+	mut status_cmd := *cmd
+	status_cmd.val = rd.read_string()!
+	println(status_cmd.val) // outputs PONG correctly
 }
