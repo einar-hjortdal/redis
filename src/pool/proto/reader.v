@@ -83,8 +83,6 @@ pub fn (mut rd Reader) read_line() !string {
 }
 
 fn (mut rd Reader) read() !string {
-	// BufferedReader `read_line` stops at `\n`
-	// https://modules.vlang.io/io.html#BufferedReader.read_line
 	b := rd.private_read_line()!
 	if b == resp_crlf || !b.ends_with(resp_crlf) {
 		return error('Invalid reply: ${b}')
