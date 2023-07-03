@@ -65,6 +65,7 @@ fn cmd_string(cmd Cmder, val json.Any) string {
 *
 */
 
+[heap] // set to heap too, not sure if needed. TODO
 struct BaseCmd {
 	args []json.Any
 mut:
@@ -154,6 +155,7 @@ mut:
 *
 */
 
+[heap] // set to heap to reference it TODO remove when unsafe not forced
 pub struct StatusCmd {
 	BaseCmd
 mut:
@@ -190,4 +192,5 @@ fn (cmd StatusCmd) cmd_string() string {
 
 fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
 	cmd.val = rd.read_string()!
+	println(cmd.val) // outputs PONG correctly
 }

@@ -102,15 +102,19 @@ fn (mut c BaseClient) process(mut cmd Cmder) ! {
 }
 
 fn (mut c BaseClient) attempt_process(mut cmd Cmder, attempt int) ! {
-	c.with_connection(fn [mut cmd] (mut cn pool.Connection) ! {
+	unsafe { // Forced unsafe because compiler? StatusCmd is [heap], BaseCmd too!
+	ref_cmd := &cmd // StatusCmd is passed as Cmder, compiler asks to wrap Cmder in [heap] struct.
+	c.with_connection(fn [mut cmd, ref_cmd] (mut cn pool.Connection) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
-		cn.with_reader(cmd.read_reply)!
-		println(cmd) // TODO remove println
+		cn.with_reader(ref_cmd.read_reply)!
+		println(ref_cmd)
 		// TODO cmd is unchanged, despite cmd.read_reply correctly setting cmd.val in its own scope.
+		// cmd.read_reply is passed as a function, it cannot be passed as `mut cmd.read_reply`
 		// TODO everything hangs because connection_pool.free_turn has an empty pool by default.
 	})!
+}
 }
 
 // close closes the client, releasing any open resources.
