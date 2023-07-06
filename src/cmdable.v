@@ -33,24 +33,24 @@ fn (c Cmdable) ping() !&StatusCmd {
 struct CmdableStateful {
 	Cmdable
 mut:
-	cmdable_stateful_function fn (cmd &Cmder)
+	cmdable_stateful_function fn (cmd &Cmder) !
 }
 
-pub fn (c CmdableStateful) auth(password string) &StatusCmd {
+pub fn (c CmdableStateful) auth(password string) !&StatusCmd {
 	cmd := new_status_cmd('auth', password)
-	c.cmdable_stateful_function(cmd)
+	c.cmdable_stateful_function(cmd)!
 	return cmd
 }
 
-pub fn (c CmdableStateful) auth_acl(username string, password string) &StatusCmd {
+pub fn (c CmdableStateful) auth_acl(username string, password string) !&StatusCmd {
 	cmd := new_status_cmd('auth', username, password)
-	c.cmdable_stateful_function(cmd)
+	c.cmdable_stateful_function(cmd)!
 	return cmd
 }
 
 // It is called `select_db` because `select` is a reserved keyword.
-pub fn (c CmdableStateful) select_db(index int) &StatusCmd {
+pub fn (c CmdableStateful) select_db(index int) !&StatusCmd {
 	cmd := new_status_cmd('select', index)
-	c.cmdable_stateful_function(cmd)
+	c.cmdable_stateful_function(cmd)!
 	return cmd
 }
