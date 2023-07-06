@@ -65,7 +65,8 @@ fn cmd_string(cmd Cmder, val json.Any) string {
 *
 */
 
-[heap] // set to heap too, not sure if needed. TODO
+// set to heap too, not sure if needed. TODO
+[heap]
 struct BaseCmd {
 	args []json.Any
 mut:
@@ -155,7 +156,8 @@ mut:
 *
 */
 
-[heap] // set to heap to reference it TODO remove when unsafe not forced
+// set to heap to reference it TODO remove when unsafe not forced
+[heap]
 pub struct StatusCmd {
 	BaseCmd
 mut:
@@ -190,8 +192,8 @@ fn (cmd StatusCmd) cmd_string() string {
 	return cmd_string(cmd, cmd.val)
 }
 
-fn (cmd &StatusCmd) read_reply(mut rd proto.Reader) ! {
-	mut status_cmd := *cmd
-	status_cmd.val = rd.read_string()!
-	println(status_cmd.val) // outputs PONG correctly
+fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
+	cmd.val = rd.read_string()!
+	println(cmd.val) // outputs PONG correctly
+	// why does println(cmd) cause an invalid memory access error here but no elsewhere?)
 }

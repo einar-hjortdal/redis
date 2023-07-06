@@ -48,8 +48,8 @@ fn new_dialer(opts Options) fn (address string) !&net.TcpConn {
 	}
 }
 
-fn new_connection_pool(opts Options) pool.ConnectionPool {
-	pool_opts := pool.Options{
+fn new_connection_pool(opts Options) &pool.ConnectionPool {
+	pool_opts := &pool.Options{
 		dialer: fn [opts] () !&net.TcpConn {
 			return opts.dialer(opts.address)
 		}

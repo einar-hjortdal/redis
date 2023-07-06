@@ -97,7 +97,7 @@ fn (mut c BaseClient) process(mut cmd Cmder) ! {
 			if attempt == c.options.max_retries {
 				return err
 			} else {
-			continue
+				continue
 			}
 		}
 		break
@@ -112,7 +112,7 @@ fn (mut c BaseClient) attempt_process(mut cmd Cmder) ! {
 		cn.with_reader(cmd.read_reply)!
 		println(cmd)
 		// TODO cmd is unchanged, despite cmd.read_reply correctly setting cmd.val in its own scope.
-		// cmd.read_reply is passed as a function, it cannot be passed as `mut cmd.read_reply`, cmd is mut.
+		// cmd.read_reply is passed as a function and cmd should be a reference
 	})!
 }
 
@@ -139,10 +139,10 @@ pub struct Client {
 }
 
 // new_client returns a client according to the specified Options.
-pub fn new_client(mut options Options) Client {
+pub fn new_client(mut options Options) &Client {
 	options.init()
 
-	mut c := Client{
+	mut c := &Client{
 		BaseClient: BaseClient{
 			options: options
 			connection_pool: new_connection_pool(options)
