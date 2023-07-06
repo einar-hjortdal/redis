@@ -64,13 +64,13 @@ fn (c BaseClient) init_connection(mut cn pool.Connection) ! {
 	// These commands can be pipelined.
 	if password != '' {
 		if username != '' {
-			conn.auth_acl(username, password)
+			conn.auth_acl(username, password)!
 		} else {
-			conn.auth(password)
+			conn.auth(password)!
 		}
 	}
 	if c.options.db > 0 {
-		conn.select_db(c.options.db)
+		conn.select_db(c.options.db)!
 	}
 }
 
@@ -91,26 +91,28 @@ fn (mut c BaseClient) dial(address string) !&net.TcpConn {
 	return c.options.dialer(address)
 }
 
-fn (mut c BaseClient) process(mut cmd &Cmder) ! {
-	for attempt := 0; attempt <= c.options.max_retries; attempt++ {
-		c.attempt_process(mut cmd, attempt) or {
+fn (mut c BaseClient) process(mut cmd Cmder) ! {
+	for attempt := 0; attempt <= c.options.max_retries; attempt += 1 {
+		c.attempt_process(mut cmd) or {
 			if attempt == c.options.max_retries {
 				return err
+			} else {
+			continue
 			}
 		}
+		break
 	}
 }
 
-fn (mut c BaseClient) attempt_process(mut cmd &Cmder, attempt int) ! {
-	c.with_connection(fn [&cmd] (mut cn pool.Connection) ! {
+fn (mut c BaseClient) attempt_process(mut cmd Cmder) ! {
+	c.with_connection(fn [mut cmd] (mut cn pool.Connection) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
 		cn.with_reader(cmd.read_reply)!
 		println(cmd)
 		// TODO cmd is unchanged, despite cmd.read_reply correctly setting cmd.val in its own scope.
-		// cmd.read_reply is passed as a function, it cannot be passed as `mut cmd.read_reply`
-		// TODO everything hangs because connection_pool.free_turn has an empty pool by default.
+		// cmd.read_reply is passed as a function, it cannot be passed as `mut cmd.read_reply`, cmd is mut.
 	})!
 }
 
@@ -150,7 +152,7 @@ pub fn new_client(mut options Options) Client {
 	return c
 }
 
-fn (mut c Client) process(mut cmd &Cmder) ! {
+fn (mut c Client) process(mut cmd Cmder) ! {
 	c.BaseClient.process(mut cmd)!
 }
 
