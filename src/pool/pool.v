@@ -53,8 +53,8 @@ mut:
 	mutex     sync.Mutex
 }
 
-pub fn new_connection_pool(opts Options) ConnectionPool {
-	mut new := ConnectionPool{
+pub fn new_connection_pool(opts Options) &ConnectionPool {
+	mut new := &ConnectionPool{
 		opts: opts
 		queue: chan int{cap: opts.pool_size}
 		connections: []Connection{}
@@ -147,8 +147,10 @@ pub fn (mut pool ConnectionPool) get() !Connection {
 		pool.mutex.unlock()
 		return connection
 	}
-	new_connection := pool.private_new_connection(true)!
-	pool.free_turn()
+	new_connection := pool.private_new_connection(true) or {
+		pool.free_turn()
+		return err
+	}
 	return new_connection
 }
 
@@ -161,7 +163,6 @@ fn (mut pool ConnectionPool) wait_turn() ! {
 }
 
 fn (mut pool ConnectionPool) free_turn() {
-	// TODO this hangs because empty queue by default
 	_ := <-pool.queue
 }
 
@@ -200,7 +201,7 @@ pub fn (mut pool ConnectionPool) put(mut connection Connection) ! {
 
 	pool.mutex.unlock()
 	pool.free_turn()
-
+	
 	if should_close_connection {
 		pool.close_connection(mut connection)!
 	}
