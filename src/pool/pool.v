@@ -201,7 +201,7 @@ pub fn (mut pool ConnectionPool) put(mut connection Connection) ! {
 
 	pool.mutex.unlock()
 	pool.free_turn()
-	
+
 	if should_close_connection {
 		pool.close_connection(mut connection)!
 	}

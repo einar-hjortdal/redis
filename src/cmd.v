@@ -65,8 +65,6 @@ fn cmd_string(cmd Cmder, val json.Any) string {
 *
 */
 
-// set to heap too, not sure if needed. TODO
-[heap]
 struct BaseCmd {
 	args []json.Any
 mut:
@@ -156,8 +154,6 @@ mut:
 *
 */
 
-// set to heap to reference it TODO remove when unsafe not forced
-[heap]
 pub struct StatusCmd {
 	BaseCmd
 mut:

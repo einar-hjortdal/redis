@@ -1,8 +1,12 @@
 module redis
 
-fn test_ping() {
+fn setup_client() &Client {
 	mut opts := Options{}
-	mut client := new_client(mut opts)
+	return new_client(mut opts)
+}
+
+fn test_ping() {
+	client := setup_client()
 	res := client.ping() or {
 		println(err)
 		return
