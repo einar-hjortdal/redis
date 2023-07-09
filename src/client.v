@@ -109,9 +109,9 @@ fn (mut c BaseClient) attempt_process(mut cmd Cmder) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
-		cn.with_reader(fn [mut cmd] (mut rd proto.Reader) ! {
-			cmd.read_reply(mut rd)!
-		})!
+		cn.with_reader(cmd.read_reply)! // <-- passing cmd as method receiver of read_reply
+		println(cmd) // <-- cmd.val is not set despite println being in the same scope
+		// cmd should be a reference, as illustrated by commit f99737dc1386c667932bbff9809df974692f3a86
 	})!
 }
 
