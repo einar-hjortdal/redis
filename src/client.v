@@ -109,10 +109,9 @@ fn (mut c BaseClient) attempt_process(mut cmd Cmder) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
-		cn.with_reader(cmd.read_reply)!
-		println(cmd)
-		// TODO cmd is unchanged, despite cmd.read_reply correctly setting cmd.val in its own scope.
-		// cmd.read_reply is passed as a function and cmd should be a reference
+		cn.with_reader(fn [mut cmd] (mut rd proto.Reader) ! {
+			cmd.read_reply(mut rd)!
+		})!
 	})!
 }
 

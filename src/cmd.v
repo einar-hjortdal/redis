@@ -194,6 +194,4 @@ fn (cmd StatusCmd) cmd_string() string {
 
 fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
 	cmd.val = rd.read_string()!
-	println(cmd.val) // outputs PONG correctly
-	// why does println(cmd) cause an invalid memory access error here but no elsewhere?)
 }
