@@ -65,6 +65,7 @@ fn cmd_string(cmd Cmder, val json.Any) string {
 *
 */
 
+[heap]
 struct BaseCmd {
 	args []json.Any
 mut:
@@ -154,6 +155,7 @@ mut:
 *
 */
 
+[heap]
 pub struct StatusCmd {
 	BaseCmd
 mut:

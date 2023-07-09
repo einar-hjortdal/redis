@@ -104,12 +104,23 @@ fn (mut c BaseClient) process(mut cmd Cmder) ! {
 	}
 }
 
-fn (mut c BaseClient) attempt_process(mut cmd Cmder) ! {
+fn (mut c BaseClient) attempt_process(mut cmd_val Cmder) ! {
+	// Trying to apply https://github.com/vlang/v/blob/3558e05bfb6f5a1607bf60dd503786a90c1fdbc3/doc/docs.md#closures
+	// Defining a reference to propagate changes outside of closure scope.
+	mut cmd := &cmd_val // <-- error
+	// `cmd_val` cannot be referenced outside `unsafe` blocks as it might be stored on stack.
+	// Consider wrapping the `.Cmder` object in a `struct` declared as `[heap]`.
+	//
+	// A few problems here:
+	// 1) cmd_val is already supposed to be a reference.
+	// 2) cmd_val is already a StatusCmd struct, defined as [heap] that impplements the Cmder interface.
+	// How is it possible to wrap an interface in a struct?
 	c.with_connection(fn [mut cmd] (mut cn pool.Connection) ! {
 		cn.with_writer(fn [cmd] (mut wr proto.Writer) ! {
 			write_cmd(mut wr, cmd)!
 		})!
-		cn.with_reader(cmd.read_reply)!
+		cn.with_reader(cmd.read_reply)! // <-- Even by using unsafe blocks, the same situation as
+		// commit 3a7d04e59a92416700a03191ad605f35daf6a65e happens.
 	})!
 }
 
