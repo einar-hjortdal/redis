@@ -191,3 +191,50 @@ fn (cmd StatusCmd) cmd_string() string {
 fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
 	cmd.val = rd.read_string()!
 }
+
+/*
+*
+*
+* StringCmd
+*
+*
+*/
+
+pub struct StringCmd {
+	BaseCmd
+mut:
+	val string
+}
+
+fn new_string_cmd(args ...json.Any) &StringCmd {
+	return &StringCmd{
+		BaseCmd: BaseCmd{
+			args: args
+		}
+	}
+}
+
+fn (mut cmd StringCmd) set_val(val string) {
+	cmd.val = val
+}
+
+fn (cmd StringCmd) val() string {
+	return cmd.val
+}
+
+fn (cmd StringCmd) result() !string {
+	if cmd.val != '' {
+		return cmd.val
+	} else {
+		return cmd.err
+	}
+}
+
+fn (cmd StringCmd) cmd_string() string {
+	return cmd_string(cmd, cmd.val)
+}
+
+fn (mut cmd StringCmd) read_reply(mut rd proto.Reader) ! {
+	println(cmd)
+	cmd.val = rd.read_string()!
+}

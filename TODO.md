@@ -7,7 +7,8 @@ In no particular order.
 - Document creation of a client and issuing commands in README.md
 - Add tests
 - Add context
-- Do not use `json.Any`
+- Eliminate `json.Any`
+- Add logger
 
 ## Options
 
@@ -40,6 +41,7 @@ In no particular order.
 
 - Add `do` API to issue unsupported commands
 - Support all commands listed [here](https://docs.keydb.dev/docs/commands)
+- Consider to only accept strings in commands, let user serialize their data.
 
 ## Proto
 

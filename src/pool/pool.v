@@ -171,11 +171,13 @@ fn (mut pool ConnectionPool) pop_idle() !Connection {
 	if length == 0 {
 		return error('No available idle connections')
 	}
-
 	index := length - 1
 	mut popped_conn := pool.idle_connections[index]
-	pool.idle_connections = pool.idle_connections[0..index - 1]
-
+	if index > 0 {
+		pool.idle_connections = pool.idle_connections[0..index - 1]
+	} else {
+		pool.idle_connections = []Connection{}
+	}
 	pool.idle_connections_length -= 1
 	pool.check_min_idle_connections()
 	return popped_conn
