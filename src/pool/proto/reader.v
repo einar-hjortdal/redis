@@ -96,10 +96,10 @@ fn (mut rd Reader) read() !string {
 fn (mut rd Reader) read_string_reply(line string) !string {
 	n := reply_len(line)!
 	// read exactly n+2 bytes from rd.buf into b
-	mut b := []u8{cap: n + 2}
-	i_end := rd.offset + n + 2 // TODO may go over buffer capacity
-	for i := rd.offset; i < i_end; i += 1 {
-		b << rd.buf[i]
+	mut b := []u8{len: n + 2, cap: n + 2}
+	i_end := rd.offset + n + 2 // TODO may go past buf.cap. If this happens, buf must be refilled
+	for i, j := rd.offset, 0; i < i_end; i, j = i + 1, j + 1 {
+		b[j] = rd.buf[i]
 		rd.offset += 1
 	}
 	return b.bytestr().trim_string_right(resp_crlf)

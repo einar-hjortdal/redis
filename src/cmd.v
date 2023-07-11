@@ -236,5 +236,4 @@ fn (cmd StringCmd) cmd_string() string {
 
 fn (mut cmd StringCmd) read_reply(mut rd proto.Reader) ! {
 	cmd.val = rd.read_string()!
-	println('cmd.val: ${cmd.val}')
 }
