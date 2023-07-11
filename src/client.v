@@ -97,7 +97,6 @@ fn (mut c BaseClient) process(mut cmd Cmder) ! {
 			if attempt == c.options.max_retries {
 				return err
 			} else {
-				println(err) // TODO remove
 				continue
 			}
 		}

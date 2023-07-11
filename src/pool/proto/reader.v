@@ -48,23 +48,33 @@ fn (mut rd Reader) private_read_line() !string {
 	}
 
 	// Build string from buffer
+	// TODO remove. The problem is that the offset is not reset after one command is executed.
+	println('private_read_line filled buffer: ${rd.buf.bytestr()}') // TODO remove. buffer contains '$10'
+	println('private_read_line offset before iteration: ${rd.offset}')
 	for i := rd.offset; i < rd.buf.len; i += 1 {
+		// TODO remove begin
+		if rd.buf[i] != 0 {
+			println('private_read_line character at offset: ${rd.buf[i]}')
+		}
+		// TODO remove end
 		rd.line << rd.buf[i]
+		// Stop at the first `\n` encountered. A buffered response may contain more than one `\n`.
 		if rd.buf[i] == `\n` {
 			res := rd.line.bytestr()
 			rd.line = []u8{}
 			rd.offset += 1
+			println('private_read_line res: ${res}') // TODO remove. return doesn't contain '$10'
 			return res
 		}
 		rd.offset += 1
 	}
+	println('private_read_line offset resetted') // TODO remove
 	rd.offset = 0
 	return rd.private_read_line()
 }
 
 pub fn (mut rd Reader) read_line() !string {
 	line := rd.read()!
-
 	if line.starts_with(resp_error) {
 		return error(line.trim_string_right(resp_error))
 	}
@@ -84,6 +94,7 @@ pub fn (mut rd Reader) read_line() !string {
 
 fn (mut rd Reader) read() !string {
 	b := rd.private_read_line()!
+	println('read b: ${b}') // TODO remove
 	if b == resp_crlf || !b.ends_with(resp_crlf) {
 		return error('Invalid reply: ${b}')
 	}
@@ -272,6 +283,7 @@ fn (mut rd Reader) read_map(line string) !map[string]json.Any {
 
 pub fn (mut rd Reader) read_string() !string {
 	line := rd.read_line()!
+	println('read_string line: ${line}') // TODO remove
 
 	if line.starts_with(resp_status) {
 		return line.trim_string_left(resp_status)
