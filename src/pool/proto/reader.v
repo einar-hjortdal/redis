@@ -29,6 +29,13 @@ pub fn new_reader(io_reader io.Reader) Reader {
 	}
 }
 
+pub fn (mut rd Reader) reset() {
+	rd.buf = []u8{len: 4096, cap: 4096}
+	rd.line = []u8{}
+	rd.offset = 0
+	rd.fails = 0
+}
+
 fn (mut rd Reader) private_read_line() !string {
 	// Fill buffer
 	bytes_read := rd.reader.read(mut rd.buf)!
@@ -38,37 +45,23 @@ fn (mut rd Reader) private_read_line() !string {
 			return rd.private_read_line()
 		} else {
 			res := rd.line.bytestr()
-			// Reset Reader
-			rd.buf = []u8{len: 4096, cap: 4096}
-			rd.line = []u8{}
-			rd.offset = 0
-			rd.fails = 0
+			rd.reset()
 			return res
 		}
 	}
 
 	// Build string from buffer
-	// TODO remove. The problem is that the offset is not reset after one command is executed.
-	println('private_read_line filled buffer: ${rd.buf.bytestr()}') // TODO remove. buffer contains '$10'
-	println('private_read_line offset before iteration: ${rd.offset}')
 	for i := rd.offset; i < rd.buf.len; i += 1 {
-		// TODO remove begin
-		if rd.buf[i] != 0 {
-			println('private_read_line character at offset: ${rd.buf[i]}')
-		}
-		// TODO remove end
 		rd.line << rd.buf[i]
 		// Stop at the first `\n` encountered. A buffered response may contain more than one `\n`.
 		if rd.buf[i] == `\n` {
 			res := rd.line.bytestr()
 			rd.line = []u8{}
 			rd.offset += 1
-			println('private_read_line res: ${res}') // TODO remove. return doesn't contain '$10'
 			return res
 		}
 		rd.offset += 1
 	}
-	println('private_read_line offset resetted') // TODO remove
 	rd.offset = 0
 	return rd.private_read_line()
 }
@@ -94,7 +87,6 @@ pub fn (mut rd Reader) read_line() !string {
 
 fn (mut rd Reader) read() !string {
 	b := rd.private_read_line()!
-	println('read b: ${b}') // TODO remove
 	if b == resp_crlf || !b.ends_with(resp_crlf) {
 		return error('Invalid reply: ${b}')
 	}
@@ -103,10 +95,14 @@ fn (mut rd Reader) read() !string {
 
 fn (mut rd Reader) read_string_reply(line string) !string {
 	n := reply_len(line)!
-	mut b := []u8{len: n + 2}
-	rd.reader.read(mut b)!
-
-	return b[..n].bytestr()
+	// read exactly n+2 bytes from rd.buf into b
+	mut b := []u8{cap: n + 2}
+	i_end := rd.offset + n + 2 // TODO may go over buffer capacity
+	for i := rd.offset; i < i_end; i += 1 {
+		b << rd.buf[i]
+		rd.offset += 1
+	}
+	return b.bytestr().trim_string_right(resp_crlf)
 }
 
 fn reply_len(line string) !int {
@@ -283,7 +279,6 @@ fn (mut rd Reader) read_map(line string) !map[string]json.Any {
 
 pub fn (mut rd Reader) read_string() !string {
 	line := rd.read_line()!
-	println('read_string line: ${line}') // TODO remove
 
 	if line.starts_with(resp_status) {
 		return line.trim_string_left(resp_status)
