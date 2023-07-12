@@ -9,6 +9,8 @@ In no particular order.
 - Add context
 - Eliminate `json.Any`
 - Add logger
+- Use more `&Struct`
+- Define most structs as `[heap]`
 
 ## Options
 

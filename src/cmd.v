@@ -149,6 +149,52 @@ mut:
 /*
 *
 *
+* IntCmd
+*
+*
+*/
+
+pub struct IntCmd {
+	BaseCmd
+mut:
+	val i64
+}
+
+fn new_int_cmd(args ...json.Any) &IntCmd {
+	return &IntCmd{
+		BaseCmd: BaseCmd{
+			args: args
+		}
+	}
+}
+
+fn (mut cmd IntCmd) set_val(val i64) {
+	cmd.val = val
+}
+
+fn (cmd IntCmd) val() i64 {
+	return cmd.val
+}
+
+fn (cmd IntCmd) result() !i64 {
+	if cmd.val != 0 {
+		return cmd.val
+	} else {
+		return error(cmd.err)
+	}
+}
+
+fn (cmd IntCmd) cmd_string() string {
+	return cmd_string(cmd, cmd.val)
+}
+
+fn (mut cmd IntCmd) read_reply(mut rd proto.Reader) ! {
+	cmd.val = rd.read_int()!
+}
+
+/*
+*
+*
 * StatusCmd
 *
 *
@@ -180,7 +226,7 @@ fn (cmd StatusCmd) result() !string {
 	if cmd.val != '' {
 		return cmd.val
 	} else {
-		return cmd.err
+		return error(cmd.err)
 	}
 }
 
@@ -226,7 +272,7 @@ fn (cmd StringCmd) result() !string {
 	if cmd.val != '' {
 		return cmd.val
 	} else {
-		return cmd.err
+		return error(cmd.err)
 	}
 }
 

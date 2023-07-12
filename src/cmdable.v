@@ -41,16 +41,16 @@ fn (c Cmdable) ping() !&StatusCmd {
 	return cmd
 }
 
-// func (c cmdable) Del(ctx context.Context, keys ...string) *IntCmd {
-// 	args := make([]interface{}, 1+len(keys))
-// 	args[0] = "del"
-// 	for i, key := range keys {
-// 		args[1+i] = key
-// 	}
-// 	cmd := NewIntCmd(ctx, args...)
-// 	_ = c(ctx, cmd)
-// 	return cmd
-// }
+pub fn (c Cmdable) del(keys ...string) !&IntCmd {
+	mut args := []json.Any{}
+	args << 'del'
+	for key in keys {
+		args << key
+	}
+	cmd := new_int_cmd(...args)
+	c.cmdable_function(cmd)!
+	return cmd
+}
 
 fn (c Cmdable) get(key string) !&StringCmd {
 	cmd := new_string_cmd('get', key)

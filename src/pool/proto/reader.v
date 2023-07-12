@@ -62,8 +62,7 @@ fn (mut rd Reader) private_read_line() !string {
 		}
 		rd.offset += 1
 	}
-	rd.offset = 0
-	return rd.private_read_line()
+	return error('Invalid server response: response does not end with `\n`')
 }
 
 pub fn (mut rd Reader) read_line() !string {
@@ -97,7 +96,7 @@ fn (mut rd Reader) read_string_reply(line string) !string {
 	n := reply_len(line)!
 	// read exactly n+2 bytes from rd.buf into b
 	mut b := []u8{len: n + 2, cap: n + 2}
-	i_end := rd.offset + n + 2 // TODO may go past buf.cap. If this happens, buf must be refilled
+	i_end := rd.offset + n + 2
 	for i, j := rd.offset, 0; i < i_end; i, j = i + 1, j + 1 {
 		b[j] = rd.buf[i]
 		rd.offset += 1
@@ -304,4 +303,29 @@ pub fn (mut rd Reader) read_string() !string {
 	// 	return '${b}'
 	// }
 	return error("Can't parse reply=${line} reading string")
+}
+
+pub fn (mut rd Reader) read_int() !i64 {
+	line := rd.read_line()!
+
+	if line.starts_with(resp_status) {
+		return strconv.parse_int(line.trim_string_left(resp_status), 10, 64)
+	}
+	if line.starts_with(resp_int) {
+		return strconv.parse_int(line.trim_string_left(resp_int), 10, 64)
+	}
+	if line.starts_with(resp_string) {
+		i := rd.read_string_reply(line)!
+		return strconv.parse_int(i, 10, 64)
+	}
+	// if line.starts_with(resp_big_int) {
+	// 	b := rd.read_big_int(line)!
+	// 	return '${b}'
+	// }
+	// 	if b !is i64 {
+	// 		error("big_int ${b} value out of range")
+	// 	}
+	// 	return b.Int64(), nil
+	// }
+	return error("Can't parse int reply: ${line}")
 }
