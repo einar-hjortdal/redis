@@ -52,6 +52,40 @@ pub fn (c Cmdable) del(keys ...string) !&IntCmd {
 	return cmd
 }
 
+pub fn (c Cmdable) expire(key string, expiration time.Duration) !&BoolCmd {
+	return c.private_expire(key, expiration, '')
+}
+
+pub fn (c Cmdable) expire_nx(key string, expiration time.Duration) !&BoolCmd {
+	return c.private_expire(key, expiration, 'NX')
+}
+
+pub fn (c Cmdable) expire_xx(key string, expiration time.Duration) !&BoolCmd {
+	return c.private_expire(key, expiration, 'XX')
+}
+
+pub fn (c Cmdable) expire_gt(key string, expiration time.Duration) !&BoolCmd {
+	return c.private_expire(key, expiration, 'GT')
+}
+
+pub fn (c Cmdable) expire_lt(key string, expiration time.Duration) !&BoolCmd {
+	return c.private_expire(key, expiration, 'LT')
+}
+
+fn (c Cmdable) private_expire(key string, expiration time.Duration, mode string) !&BoolCmd {
+	mut args := []json.Any{}
+	args << 'expire'
+	args << key
+	args << format_sec(expiration)
+	if mode != '' {
+		args = arrays.concat(args, mode)
+	}
+
+	cmd := new_bool_cmd(...args)
+	c.cmdable_function(cmd)!
+	return cmd
+}
+
 fn (c Cmdable) get(key string) !&StringCmd {
 	cmd := new_string_cmd('get', key)
 	c.cmdable_function(cmd)!

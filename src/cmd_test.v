@@ -33,9 +33,20 @@ fn test_del() {
 	set_res := client.set('test_key', 'test_value', 60 * time.second) or { panic(err) }
 	del_res := client.del('test_key') or { panic(err) }
 	assert del_res.val() == 1 // deleted one value
-	get_res := client.get('test_key') or { panic(err) }
-	println(get_res) // TODO error is not set, is there an error to set?
-	// assert get_res.val() == '' // no value for key `'test_key'`
+	get_res := client.get('test_key') or {
+		assert err.msg() == 'Received nil reply'
+		return
+	}
+}
+
+fn test_expire() {
+	client := setup_cmdable_client()
+	set_res := client.set('test_key', 'test_value', 60 * time.second) or { panic(err) }
+	exp_res := client.expire('test_key', 0 * time.second) or { panic(err) }
+	get_res := client.get('test_key') or {
+		assert err.msg() == 'Received nil reply'
+		return
+	}
 }
 
 /*

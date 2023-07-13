@@ -116,7 +116,7 @@ fn reply_len(line string) !int {
 		|| line.starts_with(resp_set) || line.starts_with(resp_push) || line.starts_with(resp_map)
 		|| line.starts_with(resp_attr) {
 		if n == -1 {
-			return 0
+			return error('Received nil reply')
 		}
 	}
 	return n
@@ -173,7 +173,7 @@ pub fn (mut rd Reader) read_reply() !json.Any {
 		return rd.read_float(line)!
 	}
 	if line.starts_with(resp_bool) {
-		return rd.read_bool(line)!
+		return rd.private_read_bool(line)!
 	}
 	// big int is not part of json.Any, consider returning a string instead or create a sum type.
 	// if line.starts_with(resp_big_int) {
@@ -207,7 +207,7 @@ fn (rd Reader) read_float(line string) !f64 {
 	return strconv.atof64(line[1..])!
 }
 
-fn (rd Reader) read_bool(line string) !bool {
+fn (rd Reader) private_read_bool(line string) !bool {
 	if line[1..] == 't' {
 		return true
 	}
@@ -292,7 +292,7 @@ pub fn (mut rd Reader) read_string() !string {
 		return rd.read_string_reply(line)!
 	}
 	if line.starts_with(resp_bool) {
-		b := rd.read_bool(line)!
+		b := rd.private_read_bool(line)!
 		return '${b}'
 	}
 	if line.starts_with(resp_verbatim) {
@@ -303,6 +303,11 @@ pub fn (mut rd Reader) read_string() !string {
 	// 	return '${b}'
 	// }
 	return error("Can't parse reply=${line} reading string")
+}
+
+pub fn (mut rd Reader) read_bool() !bool {
+	s := rd.read_string() or { return false }
+	return s == 'OK' || s == '1' || s == 'true'
 }
 
 pub fn (mut rd Reader) read_int() !i64 {

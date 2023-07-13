@@ -241,6 +241,59 @@ fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
 /*
 *
 *
+* BoolCmd
+*
+*
+*/
+
+struct BoolCmd {
+	BaseCmd
+mut:
+	val bool
+}
+
+fn new_bool_cmd(args ...json.Any) &BoolCmd {
+	return &BoolCmd{
+		BaseCmd: BaseCmd{
+			args: args
+		}
+	}
+}
+
+fn (mut cmd BoolCmd) set_val(val bool) {
+	cmd.val = val
+}
+
+fn (cmd BoolCmd) val() bool {
+	return cmd.val
+}
+
+fn (cmd BoolCmd) result() !bool {
+	if cmd.val != false { // TODO this function should only return the val if command issued without error
+		return cmd.val
+	} else {
+		return error(cmd.err)
+	}
+}
+
+fn (cmd BoolCmd) cmd_string() string {
+	return cmd_string(cmd, cmd.val)
+}
+
+fn (mut cmd BoolCmd) read_reply(mut rd proto.Reader) ! {
+	cmd.val = rd.read_bool() or {
+		// `SET key value NX` returns nil when key already exists.
+		// `SETNX key value` returns bool (0/1). So convert nil to bool.
+		if err.msg() == 'nil' {
+			cmd.val = false
+		}
+		return err
+	}
+}
+
+/*
+*
+*
 * StringCmd
 *
 *
