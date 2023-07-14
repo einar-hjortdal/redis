@@ -43,13 +43,14 @@ In no particular order.
 
 - Add `do` API to issue unsupported commands
 - Support all commands listed [here](https://docs.keydb.dev/docs/commands)
-- Consider to only accept strings in commands, let user serialize their data.
+- `get` should return a `nil` result instead of an error when `key` does not exist https://docs.keydb.dev/docs/commands/#get. 
+  At the moment, Cmdable returns an error with a string `'nil'`. It would be better to have a dedicated 
+  property for nil results.
 
 ## Proto
 
 ### Reader
 
-- `Reader`'s `reader.read_line()` behavior is unknown. Does it need cache to prevent buffer-full errors?
 - `big number` can be parsed to `big.Integer`
 
 ### Writer

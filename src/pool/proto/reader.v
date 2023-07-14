@@ -116,7 +116,7 @@ fn reply_len(line string) !int {
 		|| line.starts_with(resp_set) || line.starts_with(resp_push) || line.starts_with(resp_map)
 		|| line.starts_with(resp_attr) {
 		if n == -1 {
-			return error('Received nil reply')
+			return error('nil')
 		}
 	}
 	return n
@@ -271,7 +271,7 @@ fn (mut rd Reader) read_map(line string) !map[string]json.Any {
 /*
 *
 *
-* TODO
+* Methods used by Cmdable
 *
 *
 */

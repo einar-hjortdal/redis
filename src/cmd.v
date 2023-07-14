@@ -172,10 +172,6 @@ fn (mut cmd IntCmd) set_val(val i64) {
 	cmd.val = val
 }
 
-fn (cmd IntCmd) val() i64 {
-	return cmd.val
-}
-
 fn (cmd IntCmd) result() !i64 {
 	if cmd.val != 0 {
 		return cmd.val
@@ -218,10 +214,6 @@ fn (mut cmd StatusCmd) set_val(val string) {
 	cmd.val = val
 }
 
-fn (cmd StatusCmd) val() string {
-	return cmd.val
-}
-
 fn (cmd StatusCmd) result() !string {
 	if cmd.val != '' {
 		return cmd.val
@@ -235,7 +227,14 @@ fn (cmd StatusCmd) cmd_string() string {
 }
 
 fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
-	cmd.val = rd.read_string()!
+	cmd.val = rd.read_string() or {
+		if err.msg() == 'nil' {
+			cmd.err = 'nil'
+			return
+		} else {
+			return err
+		}
+	}
 }
 
 /*
@@ -317,10 +316,6 @@ fn (mut cmd StringCmd) set_val(val string) {
 	cmd.val = val
 }
 
-fn (cmd StringCmd) val() string {
-	return cmd.val
-}
-
 fn (cmd StringCmd) result() !string {
 	if cmd.val != '' {
 		return cmd.val
@@ -334,5 +329,12 @@ fn (cmd StringCmd) cmd_string() string {
 }
 
 fn (mut cmd StringCmd) read_reply(mut rd proto.Reader) ! {
-	cmd.val = rd.read_string()!
+	cmd.val = rd.read_string() or {
+		if err.msg() == 'nil' {
+			cmd.err = 'nil'
+			return
+		} else {
+			return err
+		}
+	}
 }

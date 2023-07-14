@@ -78,9 +78,8 @@ fn (c Cmdable) private_expire(key string, expiration time.Duration, mode string)
 	args << key
 	args << format_sec(expiration)
 	if mode != '' {
-		args = arrays.concat(args, mode)
+		args << mode
 	}
-
 	cmd := new_bool_cmd(...args)
 	c.cmdable_function(cmd)!
 	return cmd
