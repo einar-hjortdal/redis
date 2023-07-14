@@ -35,7 +35,7 @@ mut:
 	cmdable_function fn (cmd &Cmder) !
 }
 
-fn (c Cmdable) ping() !&StatusCmd {
+pub fn (c Cmdable) ping() !&StatusCmd {
 	cmd := new_status_cmd('ping')
 	c.cmdable_function(cmd)!
 	return cmd
@@ -85,7 +85,7 @@ fn (c Cmdable) private_expire(key string, expiration time.Duration, mode string)
 	return cmd
 }
 
-fn (c Cmdable) get(key string) !&StringCmd {
+pub fn (c Cmdable) get(key string) !&StringCmd {
 	cmd := new_string_cmd('get', key)
 	c.cmdable_function(cmd)!
 	return cmd
@@ -93,7 +93,7 @@ fn (c Cmdable) get(key string) !&StringCmd {
 
 // set issues a `SET key value [expiration]` command.
 // Zero expiration means the key has no expiration time.
-fn (c Cmdable) set(key string, value string, expiration time.Duration) !&StatusCmd {
+pub fn (c Cmdable) set(key string, value string, expiration time.Duration) !&StatusCmd {
 	mut args := []json.Any{}
 	args << 'set'
 	args << key
