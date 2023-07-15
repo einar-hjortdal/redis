@@ -156,7 +156,6 @@ mut:
 
 pub struct IntCmd {
 	BaseCmd
-pub mut:
 	val i64
 }
 
@@ -166,6 +165,10 @@ fn new_int_cmd(args ...json.Any) &IntCmd {
 			args: args
 		}
 	}
+}
+
+pub fn (cmd IntCmd) val() i64 {
+	return cmd.val
 }
 
 fn (mut cmd IntCmd) set_val(val i64) {
@@ -198,7 +201,6 @@ fn (mut cmd IntCmd) read_reply(mut rd proto.Reader) ! {
 
 pub struct StatusCmd {
 	BaseCmd
-mut:
 	val string
 }
 
@@ -208,6 +210,10 @@ fn new_status_cmd(args ...json.Any) &StatusCmd {
 			args: args
 		}
 	}
+}
+
+pub fn (cmd StatusCmd) val() string {
+	return cmd.val
 }
 
 fn (mut cmd StatusCmd) set_val(val string) {
@@ -247,7 +253,6 @@ fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
 
 struct BoolCmd {
 	BaseCmd
-pub mut:
 	val bool
 }
 
@@ -263,7 +268,7 @@ fn (mut cmd BoolCmd) set_val(val bool) {
 	cmd.val = val
 }
 
-fn (cmd BoolCmd) val() bool {
+pub fn (cmd BoolCmd) val() bool {
 	return cmd.val
 }
 
@@ -300,7 +305,6 @@ fn (mut cmd BoolCmd) read_reply(mut rd proto.Reader) ! {
 
 pub struct StringCmd {
 	BaseCmd
-pub mut:
 	val string
 }
 
@@ -310,6 +314,10 @@ fn new_string_cmd(args ...json.Any) &StringCmd {
 			args: args
 		}
 	}
+}
+
+pub fn (cmd StringCmd) val() string {
+	return cmd.val
 }
 
 fn (mut cmd StringCmd) set_val(val string) {
