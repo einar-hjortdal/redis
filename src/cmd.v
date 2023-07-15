@@ -128,7 +128,7 @@ fn (mut cmd BaseCmd) set_err(e string) {
 	cmd.err = e
 }
 
-fn (cmd BaseCmd) err() string {
+pub fn (cmd BaseCmd) err() string {
 	return cmd.err
 }
 
