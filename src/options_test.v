@@ -6,22 +6,15 @@ fn setup_options() Options {
 	return opts
 }
 
-fn test_new_dealer() {
-	opts := setup_options()
-	dialer := new_dialer(opts) or { panic(err) }
-}
-
 fn test_new_connection_pool() {
 	opts := setup_options()
-	dialer := new_dialer(opts) or { panic(err) }
-	mut pool := new_connection_pool(opts, dialer)
+	mut pool := new_connection_pool(opts)
 	pool.close() or { panic(err) }
 }
 
 fn test_pool_get() {
 	opts := setup_options()
-	dialer := new_dialer(opts)!
-	mut pool := new_connection_pool(opts, dialer)
+	mut pool := new_connection_pool(opts)
 	conn := pool.get() or { panic(err) }
 	assert conn.id != ''
 	pool.close() or { panic(err) }

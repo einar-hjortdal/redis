@@ -156,6 +156,7 @@ mut:
 
 pub struct IntCmd {
 	BaseCmd
+mut:
 	val i64
 }
 
@@ -201,6 +202,7 @@ fn (mut cmd IntCmd) read_reply(mut rd proto.Reader) ! {
 
 pub struct StatusCmd {
 	BaseCmd
+mut:
 	val string
 }
 
@@ -253,6 +255,7 @@ fn (mut cmd StatusCmd) read_reply(mut rd proto.Reader) ! {
 
 struct BoolCmd {
 	BaseCmd
+mut:
 	val bool
 }
 
@@ -305,6 +308,7 @@ fn (mut cmd BoolCmd) read_reply(mut rd proto.Reader) ! {
 
 pub struct StringCmd {
 	BaseCmd
+mut:
 	val string
 }
 
