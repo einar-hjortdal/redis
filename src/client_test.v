@@ -19,6 +19,7 @@ fn test_hello() {
 
 	// Check authentication
 	mut res := client.ping() or { panic(err) }
+	println(res.val())
 	assert res.val() == 'PONG'
 
 	// Check RESP 3 nil replies

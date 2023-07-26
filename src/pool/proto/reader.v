@@ -38,15 +38,17 @@ pub fn (mut rd Reader) reset() {
 
 fn (mut rd Reader) private_read_line() !string {
 	// Fill buffer
-	bytes_read := rd.reader.read(mut rd.buf)!
-	if bytes_read == 0 {
-		if rd.fails < rd.mfails {
-			rd.fails += 1
-			return rd.private_read_line()
-		} else {
-			res := rd.line.bytestr()
-			rd.reset()
-			return res
+	if rd.offset == 0 || rd.offset == rd.buf.len { // TODO verify correctness{
+		bytes_read := rd.reader.read(mut rd.buf)! // hangs here
+		if bytes_read == 0 {
+			if rd.fails < rd.mfails {
+				rd.fails += 1
+				return rd.private_read_line()
+			} else {
+				res := rd.line.bytestr()
+				rd.reset()
+				return res
+			}
 		}
 	}
 

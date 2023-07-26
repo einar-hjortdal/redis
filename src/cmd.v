@@ -396,7 +396,8 @@ fn (cmd MapStringInterfaceCmd) cmd_string() string {
 fn (mut cmd MapStringInterfaceCmd) read_reply(mut rd proto.Reader) ! {
 	n := rd.read_map_len()!
 	cmd.val = map[string]json.Any{}
-	for i := 0; i < n; i++ {
+	for i := 0; i < n; i += 1 {
+		// so far it works
 		k := rd.read_string()!
 		v := rd.read_reply() or {
 			if err.msg() == 'nil' {
