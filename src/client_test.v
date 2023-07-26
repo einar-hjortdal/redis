@@ -17,10 +17,10 @@ fn setup_stateful_cmdable_client() &Client {
 fn test_hello() {
 	client := setup_stateful_cmdable_client()
 
-	// Check connection has been established correctly
+	// Check authentication
 	mut res := client.ping() or { panic(err) }
 	assert res.val() == 'PONG'
 
-	// Check nil replies
+	// Check RESP 3 nil replies
 	// TODO
 }

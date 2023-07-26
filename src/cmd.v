@@ -362,7 +362,8 @@ fn (mut cmd StringCmd) read_reply(mut rd proto.Reader) ! {
 struct MapStringInterfaceCmd {
 	BaseCmd
 mut:
-	val map[string]json.Any
+	// val map[string]json.Any
+	val json.Any
 }
 
 fn new_map_string_interface_cmd(args ...json.Any) &MapStringInterfaceCmd {
@@ -373,15 +374,18 @@ fn new_map_string_interface_cmd(args ...json.Any) &MapStringInterfaceCmd {
 	}
 }
 
-fn (mut cmd MapStringInterfaceCmd) set_val(mut val map[string]json.Any) {
-	cmd.val = val.clone()
+// fn (mut cmd MapStringInterfaceCmd) set_val(mut val map[string]json.Any) {
+fn (mut cmd MapStringInterfaceCmd) set_val(mut val json.Any) {
+	cmd.val = val
 }
 
-pub fn (cmd MapStringInterfaceCmd) val() map[string]json.Any {
+// pub fn (cmd MapStringInterfaceCmd) val() map[string]json.Any {
+pub fn (cmd MapStringInterfaceCmd) val() json.Any {
 	return cmd.val
 }
 
-fn (cmd MapStringInterfaceCmd) result() !map[string]json.Any {
+// fn (cmd MapStringInterfaceCmd) result() !map[string]json.Any {
+fn (cmd MapStringInterfaceCmd) result() !json.Any {
 	if cmd.err != '' {
 		return error(cmd.err)
 	} else {
@@ -395,17 +399,21 @@ fn (cmd MapStringInterfaceCmd) cmd_string() string {
 
 fn (mut cmd MapStringInterfaceCmd) read_reply(mut rd proto.Reader) ! {
 	n := rd.read_map_len()!
-	cmd.val = map[string]json.Any{}
+	// cmd.val = map[string]json.Any{}
+	mut new_map := map[string]json.Any{}
 	for i := 0; i < n; i++ {
 		k := rd.read_string()!
 		v := rd.read_reply() or {
 			if err.msg() == 'nil' {
-				cmd.val[k] = 'nil'
+				new_map[k] = 'nil'
+				// cmd.val[k] = 'nil'
 				continue
 			}
 			return err
 		}
-		cmd.val[k] = v
+		new_map[k] = v
+		// cmd.val[k] = v
 	}
+	cmd.val = new_map
 	return
 }

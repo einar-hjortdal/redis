@@ -1,13 +1,13 @@
 module pool
 
 import net
-import rand
+// import rand
 import time
 import proto
 
 pub struct Connection {
 pub:
-	id         string
+	// id         string
 	created_at time.Time
 mut:
 	connection net.TcpConn
@@ -18,10 +18,10 @@ pub mut:
 	initialized bool
 }
 
-fn new_connection(connection net.TcpConn) Connection {
-	new := Connection{
+fn new_connection(connection net.TcpConn) &Connection {
+	new := &Connection{
 		connection: connection
-		id: rand.uuid_v4()
+		// id: rand.uuid_v4()
 		created_at: time.now()
 		reader: proto.new_reader(connection)
 		writer: proto.new_writer(connection)

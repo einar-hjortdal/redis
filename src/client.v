@@ -19,7 +19,7 @@ mut:
 	on_close        fn () !
 }
 
-fn (mut c BaseClient) new_connection() !pool.Connection {
+fn (mut c BaseClient) new_connection() !&pool.Connection {
 	mut cn := c.connection_pool.new_connection()!
 
 	c.init_connection(mut cn) or {
@@ -30,12 +30,12 @@ fn (mut c BaseClient) new_connection() !pool.Connection {
 	return cn
 }
 
-fn (mut c BaseClient) get_connection() !pool.Connection {
+fn (mut c BaseClient) get_connection() !&pool.Connection {
 	cn := c.retrieve_connection()!
 	return cn
 }
 
-fn (mut c BaseClient) retrieve_connection() !pool.Connection {
+fn (mut c BaseClient) retrieve_connection() !&pool.Connection {
 	mut cn := c.connection_pool.get()!
 
 	if cn.initialized {
@@ -165,8 +165,8 @@ pub struct Connection {
 	CmdableStateful
 }
 
-fn new_connection(options Options, connection_pool pool.Pooler) Connection {
-	mut c := Connection{
+fn new_connection(options Options, connection_pool pool.Pooler) &Connection {
+	mut c := &Connection{
 		BaseClient: BaseClient{
 			options: options
 			connection_pool: connection_pool

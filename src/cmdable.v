@@ -119,7 +119,6 @@ pub fn (c Cmdable) set(key string, value string, expiration time.Duration) !&Sta
 */
 
 struct CmdableStateful {
-	Cmdable
 mut:
 	cmdable_stateful_function fn (cmd &Cmder) !
 }

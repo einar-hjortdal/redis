@@ -2,6 +2,8 @@ module redis
 
 import time
 
+// podman run --detach --name=keydb --tz=local --publish=6379:6379 --rm eqalpha/keydb
+
 /*
 *
 *
@@ -69,8 +71,8 @@ fn setup_stateful_cmdable_client() &Client {
 // This requires 2 different servers running at the same time or running the test twice with different
 // options.
 // The test is by default using the most common configuration with password only.
-fn test_hello() {
-	client := setup_stateful_cmdable_client()
-	res := client.ping() or { panic(err) }
-	assert res.val() == 'PONG'
-}
+// fn test_hello() {
+// 	client := setup_stateful_cmdable_client()
+// 	res := client.ping() or { panic(err) }
+// 	assert res.val() == 'PONG'
+// }

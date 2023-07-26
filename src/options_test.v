@@ -16,7 +16,6 @@ fn test_pool_get() {
 	opts := setup_options()
 	mut pool := new_connection_pool(opts)
 	conn := pool.get() or { panic(err) }
-	assert conn.id != ''
 	pool.close() or { panic(err) }
 }
 
