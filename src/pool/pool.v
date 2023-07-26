@@ -270,7 +270,7 @@ mut:
 	sticky_error string
 }
 
-pub fn new_single_connection_pool(pool Pooler, connection Connection) &SingleConnectionPool {
+pub fn new_single_connection_pool(pool Pooler, connection &Connection) &SingleConnectionPool {
 	return &SingleConnectionPool{
 		pool: pool
 		connection: connection

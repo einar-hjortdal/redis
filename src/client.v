@@ -159,18 +159,25 @@ fn (mut c Client) process(mut cmd Cmder) ! {
 
 // Connection represents a single connection rather than a pool of connections. A Connection is used
 // to start a new client and should not be used unless strictly necessary.
+[heap]
 pub struct Connection {
 	BaseClient
 	Cmdable
 	CmdableStateful
 }
 
-fn new_connection(options Options, connection_pool pool.Pooler) &Connection {
+fn new_connection(options Options, connection_pool &pool.Pooler) &Connection {
 	mut c := &Connection{
 		BaseClient: BaseClient{
 			options: options
 			connection_pool: connection_pool
 		}
 	}
+	c.cmdable_function = c.process
+	c.cmdable_stateful_function = c.process
 	return c
+}
+
+fn (mut c Connection) process(mut cmd Cmder) ! {
+	c.BaseClient.process(mut cmd)!
 }

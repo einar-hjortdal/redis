@@ -15,14 +15,22 @@ Install with `v install Coachonko.redis`
 ```V
 import coachonko.redis
 
+// Configure.
+mut ro := redis.Options{
+  // refer to the options.v file
+}
+
+// Create a new client.
+client := new_client(mut opts)
+
+// Issue commands as Client methods.
+// Supported commands are listed in the `cmdable.v` file.
+mut result := client.set('test_key', 'test_value', 0)!
+
+// Get the value from results
+result = client.get('test_key')!
+println(result.val())
 ```
-
-Supported commands are listed in the `cmdable.v` file.
-
-## Ecosystem
-
-- [Coachonko/sessions](https://github.com/Coachonko/sessions)
-- [Coachonko/cache](https://github.com/Coachonko/cache)
 
 ## Notes
 
