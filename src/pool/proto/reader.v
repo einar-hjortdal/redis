@@ -334,3 +334,23 @@ pub fn (mut rd Reader) read_int() !i64 {
 	// }
 	return error("Can't parse int reply: ${line}")
 }
+
+// read_map_len reads the length of the map type.
+// If responding to the array type (RespArray/RespSet/RespPush), it must be a multiple of 2 and return
+// n/2. Other types will return an error.
+pub fn (mut rd Reader) read_map_len() !int {
+	line := rd.read_line()!
+
+	if line.starts_with(resp_map) {
+		return reply_len(line)
+	}
+	if line.starts_with(resp_array) || line.starts_with(resp_set) || line.starts_with(resp_push) {
+		// Some commands may respond to array types.
+		n := reply_len(line)!
+		if n % 2 != 0 {
+			return error('The length of the array must be a multiple of 2, got: ${n}')
+		}
+		return n / 2
+	}
+	return error("Can't parse map reply: ${line}")
+}

@@ -136,6 +136,25 @@ pub fn (c CmdableStateful) auth_acl(username string, password string) !&StatusCm
 	return cmd
 }
 
+pub fn (c CmdableStateful) hello(protover int, username string, password string, client_name string) !&MapStringInterfaceCmd {
+	mut args := []json.Any{}
+	args = arrays.concat(args, 'hello', protover)
+	if password != '' {
+		if username != '' {
+			args = arrays.concat(args, 'auth', username, password)
+		} else {
+			args = arrays.concat(args, 'auth', 'default', password)
+		}
+	}
+	if client_name != '' {
+		args = arrays.concat(args, 'setname', client_name)
+	}
+	cmd := new_map_string_interface_cmd(...args)
+
+	c.cmdable_stateful_function(cmd)!
+	return cmd
+}
+
 // It is called `select_db` because `select` is a reserved keyword.
 pub fn (c CmdableStateful) select_db(index int) !&StatusCmd {
 	cmd := new_status_cmd('select', index)

@@ -350,3 +350,62 @@ fn (mut cmd StringCmd) read_reply(mut rd proto.Reader) ! {
 		}
 	}
 }
+
+/*
+*
+*
+* MapStringInterfaceCmd
+*
+*
+*/
+
+struct MapStringInterfaceCmd {
+	BaseCmd
+mut:
+	val map[string]json.Any
+}
+
+fn new_map_string_interface_cmd(args ...json.Any) &MapStringInterfaceCmd {
+	return &MapStringInterfaceCmd{
+		BaseCmd: BaseCmd{
+			args: args
+		}
+	}
+}
+
+fn (mut cmd MapStringInterfaceCmd) set_val(mut val map[string]json.Any) {
+	cmd.val = val.clone()
+}
+
+pub fn (cmd MapStringInterfaceCmd) val() map[string]json.Any {
+	return cmd.val
+}
+
+fn (cmd MapStringInterfaceCmd) result() !map[string]json.Any {
+	if cmd.err != '' {
+		return error(cmd.err)
+	} else {
+		return cmd.val
+	}
+}
+
+fn (cmd MapStringInterfaceCmd) cmd_string() string {
+	return cmd_string(cmd, cmd.val)
+}
+
+fn (mut cmd MapStringInterfaceCmd) read_reply(mut rd proto.Reader) ! {
+	n := rd.read_map_len()!
+	cmd.val = map[string]json.Any{}
+	for i := 0; i < n; i++ {
+		k := rd.read_string()!
+		v := rd.read_reply() or {
+			if err.msg() == 'nil' {
+				cmd.val[k] = 'nil'
+				continue
+			}
+			return err
+		}
+		cmd.val[k] = v
+	}
+	return
+}

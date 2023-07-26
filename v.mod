@@ -2,7 +2,7 @@ Module{
 	name: 'redis'
 	description: 'Redis library for the V language, also works with KeyDB.'
 	repo_url: 'https://github.com/Coachonko/redis'
-	version: '1.2.0'
+	version: '1.3.0'
 	license: 'NCSA'
 	dependencies: []
 	vcs: 'git'

@@ -4,7 +4,6 @@ In no particular order.
 
 ## Throughout
 
-- Only support RESP 3
 - Document creation of a client and issuing commands in README.md
 - Add tests
 - Add context
@@ -20,7 +19,6 @@ In no particular order.
 
 ## Pool
 
-- Send `HELLO 3` on connection to ensure RESP 3 protocol is being used
 - Add timeout
 - Max idle time
 - Max life time

@@ -4,6 +4,7 @@ Redis library for the V language.
 
 ## Features
 
+- RESP version 3 only
 - [Commands](src/cmdable.v)
 - Aumtomatic connection pool
 

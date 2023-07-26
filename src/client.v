@@ -61,14 +61,8 @@ fn (c BaseClient) init_connection(mut cn pool.Connection) ! {
 	conn_pool := pool.new_single_connection_pool(c.connection_pool, cn)
 	conn := new_connection(c.options, conn_pool)
 
-	// These commands can be pipelined.
-	if password != '' {
-		if username != '' {
-			conn.auth_acl(username, password)!
-		} else {
-			conn.auth(password)!
-		}
-	}
+	conn.hello(3, username, password, '')!
+
 	if c.options.db > 0 {
 		conn.select_db(c.options.db)!
 	}
