@@ -46,6 +46,8 @@ In no particular order.
 - `get` should return a `nil` result instead of an error when `key` does not exist https://docs.keydb.dev/docs/commands/#get. 
   At the moment, Cmdable returns an error with a string `'nil'`. It would be better to have a dedicated 
   property for nil results.
+- Gracefully handle errors when issuing commands on a server that requires authentication while not 
+  being authenticated.
 
 ## Proto
 

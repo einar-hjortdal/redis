@@ -60,11 +60,13 @@ fn (mut rd Reader) private_read_line() !string {
 		}
 		rd.offset += 1
 	}
-	return error('Invalid server response: response does not end with `\n`')
+
+	return error(r'Invalid server response: response does not end with \n')
 }
 
 pub fn (mut rd Reader) read_line() !string {
 	line := rd.read()!
+
 	if line.starts_with(resp_error) {
 		return error(line.trim_string_right(resp_error))
 	}
@@ -114,7 +116,7 @@ fn reply_len(line string) !int {
 		|| line.starts_with(resp_set) || line.starts_with(resp_push) || line.starts_with(resp_map)
 		|| line.starts_with(resp_attr) {
 		if n == -1 {
-			return error('nil')
+			return error('nil') // TODO is this RESP2?
 		}
 	}
 	return n

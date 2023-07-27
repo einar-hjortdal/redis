@@ -27,6 +27,7 @@ fn test_set_and_get() {
 	client := setup_cmdable_client()
 	get_nil_res := client.get('test_key') or { panic(err) }
 	assert get_nil_res.err() == 'nil'
+
 	set_res := client.set('test_key', 'test_value', 60 * time.second) or { panic(err) }
 	get_value_res := client.get('test_key') or { panic(err) }
 	assert get_value_res.val() == 'test_value'
@@ -37,6 +38,7 @@ fn test_del() {
 	set_res := client.set('test_key', 'test_value', 60 * time.second) or { panic(err) }
 	del_res := client.del('test_key') or { panic(err) }
 	assert del_res.val() == 1 // deleted one value
+
 	get_res := client.get('test_key') or { panic(err) }
 	assert get_res.err() == 'nil'
 }
@@ -60,6 +62,9 @@ fn test_expire() {
 // The HELLO command sets the RESP version to 3.
 // All related tests should go here
 
+// podman run --detach --name=keydb-hello --tz=local --publish=29400:6379 --rm eqalpha/keydb
+// requirepass aed3261756c78a862013ac9a4f0d31dc1451a25a79653ff3951a2343f33245e8
+
 fn setup_stateful_cmdable_client() &Client {
 	// Typical settings used by peony
 	mut opts := Options{
@@ -71,8 +76,6 @@ fn setup_stateful_cmdable_client() &Client {
 
 // test_hello checks that the connections are initialized properly and RESP version 3 is used.
 // To test authentication with HELLO it is nececssary to configure KeyDB to use password and ACL.
-// This requires 2 different servers running at the same time or running the test twice with different
-// options.
 // The test is by default using the most common configuration with password only.
 fn test_hello() {
 	client := setup_stateful_cmdable_client()
@@ -85,3 +88,11 @@ fn test_hello() {
 	get_nil_res := client.get('test_key') or { panic(err) }
 	assert get_nil_res.err() == 'nil'
 }
+
+// TODO when trying to issue commands on a server that requires authentication, but username/password
+// are not provided in the options:
+// -NOAUTH HELLO must be called with the client already authenticated, otherwise the HELLO AUTH <user> <pass> option can be used to authenticate the client and select the RESP protocol version at the same time
+// -NOAUTH HELLO must be called with the client already authenticated, otherwise the HELLO AUTH <user> <pass> option can be used to authenticate the client and select the RESP protocol version at the same time
+// -NOAUTH HELLO must be called with the client already authenticated, otherwise the HELLO AUTH <user> <pass> option can be used to authenticate the client and select the RESP protocol version at the same time
+// -NOAUTH HELLO must be called with the client already authenticated, otherwise the HELLO AUTH <user> <pass> option can be used to authenticate the client and select the RESP protocol version at the same time
+// Invalid server response: response does not end with \n
