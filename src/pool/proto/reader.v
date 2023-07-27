@@ -38,16 +38,12 @@ pub fn (mut rd Reader) reset() {
 
 fn (mut rd Reader) private_read_line() !string {
 	// Fill buffer
-	if rd.offset == 0 || rd.offset == rd.buf.len { // TODO verify correctness{
-		bytes_read := rd.reader.read(mut rd.buf)! // hangs here
+	if rd.offset == 0 {
+		bytes_read := rd.reader.read(mut rd.buf)! // TODO hangs if invoked on empty reply, why?
 		if bytes_read == 0 {
 			if rd.fails < rd.mfails {
 				rd.fails += 1
 				return rd.private_read_line()
-			} else {
-				res := rd.line.bytestr()
-				rd.reset()
-				return res
 			}
 		}
 	}
@@ -73,7 +69,7 @@ pub fn (mut rd Reader) read_line() !string {
 		return error(line.trim_string_right(resp_error))
 	}
 	if line.starts_with(resp_nil) {
-		return ''
+		return error('nil')
 	}
 	if line.starts_with(resp_blob_error) {
 		return rd.read_string_reply(line)!
@@ -304,7 +300,7 @@ pub fn (mut rd Reader) read_string() !string {
 	// 	b := rd.read_big_int(line)!
 	// 	return '${b}'
 	// }
-	return error("Can't parse reply=${line} reading string")
+	return error("Can't parse reply ${line} reading string")
 }
 
 pub fn (mut rd Reader) read_bool() !bool {

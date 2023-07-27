@@ -57,6 +57,9 @@ fn test_expire() {
 *
 */
 
+// The HELLO command sets the RESP version to 3.
+// All related tests should go here
+
 fn setup_stateful_cmdable_client() &Client {
 	// Typical settings used by peony
 	mut opts := Options{
@@ -71,8 +74,14 @@ fn setup_stateful_cmdable_client() &Client {
 // This requires 2 different servers running at the same time or running the test twice with different
 // options.
 // The test is by default using the most common configuration with password only.
-// fn test_hello() {
-// 	client := setup_stateful_cmdable_client()
-// 	res := client.ping() or { panic(err) }
-// 	assert res.val() == 'PONG'
-// }
+fn test_hello() {
+	client := setup_stateful_cmdable_client()
+
+	// Check authentication
+	mut res := client.ping() or { panic(err) }
+	assert res.val() == 'PONG'
+
+	// Check RESP 3 nil replies
+	get_nil_res := client.get('test_key') or { panic(err) }
+	assert get_nil_res.err() == 'nil'
+}
