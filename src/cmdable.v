@@ -32,7 +32,7 @@ fn format_sec(duration time.Duration) i64 {
 
 struct Cmdable {
 mut:
-	cmdable_function fn (cmd &Cmder) !
+	cmdable_function fn (cmd &Cmder) ! = unsafe { nil }
 }
 
 pub fn (c Cmdable) ping() !&StatusCmd {
@@ -120,7 +120,7 @@ pub fn (c Cmdable) set(key string, value string, expiration time.Duration) !&Sta
 
 struct CmdableStateful {
 mut:
-	cmdable_stateful_function fn (cmd &Cmder) !
+	cmdable_stateful_function fn (cmd &Cmder) ! = unsafe { nil }
 }
 
 pub fn (c CmdableStateful) auth(password string) !&StatusCmd {

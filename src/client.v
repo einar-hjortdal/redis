@@ -16,7 +16,7 @@ struct BaseClient {
 	options Options
 mut:
 	connection_pool pool.Pooler
-	on_close        fn () !
+	on_close        fn () ! = unsafe { nil }
 }
 
 fn (mut c BaseClient) new_connection() !&pool.Connection {

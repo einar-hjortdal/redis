@@ -7,7 +7,7 @@ import pool
 pub struct Options {
 mut:
 	// dialer is set with the `init` method.
-	dialer fn (addr string) !&net.TcpConn
+	dialer fn (addr string) !&net.TcpConn = unsafe { nil }
 pub mut:
 	// address is expected in a host:port form, defaults to 'localhost:6379'
 	address string
