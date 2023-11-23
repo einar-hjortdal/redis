@@ -125,7 +125,7 @@ fn (mut c BaseClient) close() ! {
 
 // Client representing a pool of zero or more underlying connections. A client creates and frees connections
 // automatically.
-[heap]
+@[heap]
 pub struct Client {
 	BaseClient
 	Cmdable
@@ -159,7 +159,7 @@ fn (mut c Client) process(mut cmd Cmder) ! {
 
 // Connection represents a single connection rather than a pool of connections. A Connection is used
 // to start a new client and should not be used unless strictly necessary.
-[heap]
+@[heap]
 pub struct Connection {
 	BaseClient
 	Cmdable
