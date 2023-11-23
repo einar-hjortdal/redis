@@ -4,10 +4,10 @@ In no particular order.
 
 ## Throughout
 
+- Eliminate `json.Any`, replace with empty interface or sum type.
 - Document creation of a client and issuing commands in README.md
 - Add tests
 - Add context
-- Eliminate `json.Any`
 - Add logger
 - Use more `&Struct`
 - Define most structs as `[heap]`
@@ -45,7 +45,7 @@ In no particular order.
 - Support all commands listed [here](https://docs.keydb.dev/docs/commands)
 - `get` should return a `nil` result instead of an error when `key` does not exist https://docs.keydb.dev/docs/commands/#get. 
   At the moment, Cmdable returns an error with a string `'nil'`. It would be better to have a dedicated 
-  property for nil results.
+  property for nil results. Create custom error type or return a struct with `nil` property.
 - Gracefully handle errors when issuing commands on a server that requires authentication while not 
   being authenticated.
 
@@ -57,4 +57,4 @@ In no particular order.
 
 ### Writer
 
-- Handle `[]json.Any` and `map[string]json.Any`.
+- Handle `[]json.Any` and `map[string]json.Any` (related to line 7 of this TODO)
