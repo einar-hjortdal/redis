@@ -2,8 +2,6 @@ module redis
 
 import time
 
-// podman run --detach --name=keydb --tz=local --publish=6379:6379 --rm eqalpha/keydb
-
 /*
 *
 *

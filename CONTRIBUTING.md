@@ -23,3 +23,17 @@ Please follow these standards
 7. Push changes to the remote "origin" (your repository)
 8. Create a pull request
   - If the pull request addresses an issue, tag the related issue
+
+## Testing
+
+- Running tests requires a KeyDB instance running on port `6379`. An instance can be started with Podman:
+  ```bash
+  podman run 
+    --detach 
+    --name=keydb 
+    --tz=local 
+    --publish=6379:6379 
+    --rm 
+    docker.io/eqalpha/keydb:latest
+  ```
+  This instance can be stopped with `podman stop keydb`.
