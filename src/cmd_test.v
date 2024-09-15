@@ -60,9 +60,6 @@ fn test_expire() {
 // The HELLO command sets the RESP version to 3.
 // All related tests should go here
 
-// podman run --detach --name=keydb-hello --tz=local --publish=29400:6379 --rm eqalpha/keydb
-// requirepass aed3261756c78a862013ac9a4f0d31dc1451a25a79653ff3951a2343f33245e8
-
 fn setup_stateful_cmdable_client() &Client {
 	// Typical settings used by peony
 	mut opts := Options{
@@ -73,7 +70,7 @@ fn setup_stateful_cmdable_client() &Client {
 }
 
 // test_hello checks that the connections are initialized properly and RESP version 3 is used.
-// To test authentication with HELLO it is nececssary to configure KeyDB to use password and ACL.
+// To test authentication with HELLO it is nececssary to configure Redict to use password and ACL.
 // The test is by default using the most common configuration with password only.
 fn test_hello() {
 	client := setup_stateful_cmdable_client()

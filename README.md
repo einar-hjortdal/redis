@@ -34,8 +34,7 @@ println(result.val())
 
 ## Notes
 
-This library is developed against [KeyDB](https://github.com/Snapchat/KeyDB/), a multithreaded drop-in 
-replacement for Redis backed by [Snap](https://snap.com/).
+This library is developed against [Redict](https://redict.io/).
 
 Pull requests are very welcome. Please look at [CONTRIBUTING.md](./CONTRIBUTING.md) and at [TODO.md](./TODO.md) 
 files. Open issues for problems you encounter, reach out to me and the other contributors on [V's Discord](https://discord.gg/vlang).

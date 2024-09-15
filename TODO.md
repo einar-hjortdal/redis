@@ -5,7 +5,6 @@ In no particular order.
 ## Throughout
 
 - Eliminate `json.Any`, replace with empty interface or sum type.
-- Document creation of a client and issuing commands in README.md
 - Add tests
 - Add context
 - Add logger
@@ -26,9 +25,9 @@ In no particular order.
 
 ## Client
 
-- Implement [cluster](https://docs.keydb.dev/docs/cluster-spec/) client
-- Implement [pipeline](https://docs.keydb.dev/docs/pipelining/)
-- Implement [pub/sub](https://docs.keydb.dev/docs/pubsub/)
+- Implement cluster client
+- Implement pipeline
+- Implement pub/sub
 - Implement retry_backoff
 - Handle errors properly
 - Implement hooks: provide a way to modify or customize the behavior of specific stages in the command 
@@ -42,10 +41,10 @@ In no particular order.
 ## Cmdable
 
 - Add `do` API to issue unsupported commands
-- Support all commands listed [here](https://docs.keydb.dev/docs/commands)
-- `get` should return a `nil` result instead of an error when `key` does not exist https://docs.keydb.dev/docs/commands/#get. 
-  At the moment, Cmdable returns an error with a string `'nil'`. It would be better to have a dedicated 
-  property for nil results. Create custom error type or return a struct with `nil` property.
+- Support all commands listed [here](https://redict.io/docs/commands)
+- `get` should return a `nil` result instead of an error when `key` does not exist. At the moment, Cmdable 
+  returns an error with a string `'nil'`. It would be better to have a dedicated property for nil results. 
+  Create custom error type or return a struct with `nil` property.
 - Gracefully handle errors when issuing commands on a server that requires authentication while not 
   being authenticated.
 
