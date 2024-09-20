@@ -1,3 +1,7 @@
+| :warning: WARNING           |
+|:----------------------------|
+| Because of the change in license of Redis, I have moved to [Redict](https://redict.io/). I have forked this project [here](https://github.com/einar-hjortdal/redict). |
+
 # redis
 
 Redis library for the V language.
